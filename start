@@ -1,1 +1,148 @@
 ## Under Debian 9.8.0
+prometheus@prometheus:~$ cd ~
+prometheus@prometheus:~$ mkdir -p Prometheus
+prometheus@prometheus:~$  cd Prometheus
+prometheus@prometheus:~/Prometheus$ wget https://github.com/prometheus/prometheus/releases/download/v1.7.2/prometheus-1.7.2.linux-amd64.tar.gz
+--2019-03-06 11:39:19--  https://github.com/prometheus/prometheus/releases/download/v1.7.2/prometheus-1.7.2.linux-amd64.tar.gz
+Resolviendo github.com (github.com)... 140.82.118.4, 140.82.118.3
+Conectando con github.com (github.com)[140.82.118.4]:443... conectado.
+Petición HTTP enviada, esperando respuesta... 302 Found
+Localización: https://github-production-release-asset-2e65be.s3.amazonaws.com/6838921/188d048a-a2c7-11e7-8742-ef8b580f3199?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20190306%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190306T103919Z&X-Amz-Expires=300&X-Amz-Signature=c014cb704da05d22634892059777f1fa8af37c5ef7b9bcf02a430050db93b6b3&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dprometheus-1.7.2.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream [siguiendo]
+--2019-03-06 11:39:20--  https://github-production-release-asset-2e65be.s3.amazonaws.com/6838921/188d048a-a2c7-11e7-8742-ef8b580f3199?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20190306%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190306T103919Z&X-Amz-Expires=300&X-Amz-Signature=c014cb704da05d22634892059777f1fa8af37c5ef7b9bcf02a430050db93b6b3&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dprometheus-1.7.2.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream
+Resolviendo github-production-release-asset-2e65be.s3.amazonaws.com (github-production-release-asset-2e65be.s3.amazonaws.com)... 52.216.0.96
+Conectando con github-production-release-asset-2e65be.s3.amazonaws.com (github-production-release-asset-2e65be.s3.amazonaws.com)[52.216.0.96]:443... conectado.
+Petición HTTP enviada, esperando respuesta... 200 OK
+Longitud: 17163877 (16M) [application/octet-stream]
+Grabando a: “prometheus-1.7.2.linux-amd64.tar.gz”
+
+prometheus-1.7.2.linux-amd64.tar.gz  100%[====================================================================>]  16,37M  6,80MB/s    in 2,4s    
+
+2019-03-06 11:39:22 (6,80 MB/s) - “prometheus-1.7.2.linux-amd64.tar.gz” guardado [17163877/17163877]
+
+prometheus@prometheus:~/Prometheus$ tar xvfz prometheus-1.7.2.linux-amd64.tar.gz
+prometheus-1.7.2.linux-amd64/
+prometheus-1.7.2.linux-amd64/consoles/
+prometheus-1.7.2.linux-amd64/consoles/aws_elasticache.html
+prometheus-1.7.2.linux-amd64/consoles/aws_elb.html
+prometheus-1.7.2.linux-amd64/consoles/aws_redshift-cluster.html
+prometheus-1.7.2.linux-amd64/consoles/aws_redshift.html
+prometheus-1.7.2.linux-amd64/consoles/blackbox.html
+prometheus-1.7.2.linux-amd64/consoles/cassandra.html
+prometheus-1.7.2.linux-amd64/consoles/cloudwatch.html
+prometheus-1.7.2.linux-amd64/consoles/haproxy-backend.html
+prometheus-1.7.2.linux-amd64/consoles/haproxy-backends.html
+prometheus-1.7.2.linux-amd64/consoles/haproxy-frontend.html
+prometheus-1.7.2.linux-amd64/consoles/haproxy-frontends.html
+prometheus-1.7.2.linux-amd64/consoles/haproxy.html
+prometheus-1.7.2.linux-amd64/consoles/index.html.example
+prometheus-1.7.2.linux-amd64/consoles/node-cpu.html
+prometheus-1.7.2.linux-amd64/consoles/node-disk.html
+prometheus-1.7.2.linux-amd64/consoles/node-overview.html
+prometheus-1.7.2.linux-amd64/consoles/node.html
+prometheus-1.7.2.linux-amd64/consoles/prometheus-overview.html
+prometheus-1.7.2.linux-amd64/consoles/prometheus.html
+prometheus-1.7.2.linux-amd64/consoles/snmp-overview.html
+prometheus-1.7.2.linux-amd64/consoles/snmp.html
+prometheus-1.7.2.linux-amd64/console_libraries/
+prometheus-1.7.2.linux-amd64/console_libraries/menu.lib
+prometheus-1.7.2.linux-amd64/console_libraries/prom.lib
+prometheus-1.7.2.linux-amd64/prometheus.yml
+prometheus-1.7.2.linux-amd64/LICENSE
+prometheus-1.7.2.linux-amd64/NOTICE
+prometheus-1.7.2.linux-amd64/prometheus
+prometheus-1.7.2.linux-amd64/promtool
+prometheus@prometheus:~/Prometheus$ mv prometheus-1.7.2.linux-amd64/ server
+prometheus@prometheus:~/Prometheus$ cd server/
+prometheus@prometheus:~/Prometheus/server$ nano configuration.yml
+prometheus@prometheus:~/Prometheus/server$ ./prometheus -config.file=configuration.yml
+
+
+## Prometheus as a service
+
+sudo useradd -r -s /bin/false prometheus
+$ mkdir -p data
+$ setfacl -R -m u:prometheus:rwx data
+$ setfacl -dR -m u:prometheus:rwx data
+$ nano init_prometheus
+
+#!/bin/sh
+cd path_to_prometheus
+sudo -u prometheus ./prometheus --config.file=configuration.yml
+$ sudo chmod 700 init_prometheus
+$ sudo nano /etc/systemd/system/prometheus.service
+
+[Unit]
+Description=Prometheus Service
+After=network-online.target
+
+[Service]
+ExecStart=path_to_prometheus/init_prometheus
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+
+
+$ sudo systemctl daemon-reload
+$ sudo systemctl start prometheus
+
+$ sudo systemctl enable prometheus
+
+## Install node exporter
+
+$ cd ~/Prometheus
+$ wget https://github.com/prometheus/node_exporter/releases/download/v0.14.0/node_exporter-0.14.0.linux-amd64.tar.gz
+$ tar xvfz node_exporter-0.14.0.linux-amd64.tar.gz
+$ cd node_exporter
+$ ./node_exporter
+
+##node exporter as a service
+
+sudo useradd -r -s /bin/false node_exporter
+nano init_node_exporter
+
+#!/bin/sh
+cd path_to_node_exporter
+sudo -u node_exporter ./node_exporter
+
+sudo chmod 700 init_node_exporter
+sudo nano /etc/systemd/system/node_exporter.service
+
+[Unit]
+Description=Node Exporter
+
+[Service]
+ExecStart=path_to_node_exporter/init_node_exporter
+
+[Install]
+WantedBy=multi-user.target
+
+$ sudo systemctl daemon-reload
+$ sudo systemctl start node_exporter
+sudo systemctl enable node_exporter
+
+##Config prometheus to obtain data od node exporter
+
+$ cd ~/Prometheus/server
+$ nano configuration.yml
+
+
+  - job_name: 'local_node_exporter'
+    static_configs:
+      - targets: ['localhost:9100'] 
+      
+
+##Install Grafana and Prometheus config
+
+$ wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_4.5.2_amd64.deb
+$ sudo apt-get install -y adduser libfontconfig
+$ sudo dpkg -i grafana_4.5.2_amd64.deb
+$ sudo systemctl daemon-reload
+$ sudo systemctl start grafana-server
+
+$ sudo systemctl enable grafana-server.service
+
+https://localhost:3000
+
+
+Source: https://www.deimoscode.com/post/instalacion-y-configuracion-de-prometheus-para-monitorear-tu-sistema-ubuntu
