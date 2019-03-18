@@ -3,17 +3,17 @@
 ## Prometheus as a service
 
 sudo useradd -r -s /bin/false prometheus
-mkdir -p data
+mkdir -p /home/malen/Prometheus/server/data
 setfacl -R -m u:prometheus:rwx data
 setfacl -dR -m u:prometheus:rwx data
-nano init_prometheus
+nano /home/malen/Prometheus/server/init_prometheus
 
 ## /bin/sh
 ##cd path_to_prometheus
 ##sudo -u prometheus ./prometheus --config.file=configuration.yml
 
 
-sudo chmod 700 init_prometheus
+sudo chmod 700 /home/malen/Prometheus/server/init_prometheus
 sudo nano /etc/systemd/system/prometheus.service
 
 ##[Unit]
