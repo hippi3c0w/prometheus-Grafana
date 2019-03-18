@@ -4,8 +4,8 @@
 
 sudo useradd -r -s /bin/false prometheus
 mkdir -p /home/malen/Prometheus/server/data
-setfacl -R -m u:prometheus:rwx data
-setfacl -dR -m u:prometheus:rwx data
+setfacl -R -m u:prometheus:rwx /home/malen/Prometheus/server/data
+setfacl -dR -m u:prometheus:rwx /home/malen/Prometheus/server/data
 nano /home/malen/Prometheus/server/init_prometheus
 
 ## /bin/sh
